@@ -21,13 +21,8 @@ c = 3*10^8;         %speed of light
 fc= 77e9;             %carrier freq
 
 wavelength = c/fc;
-delta_r = 1;
-Bsweep = c/2*delta_r;
+range_resolution = 1;
 range_max = 200;
-Ts = 5.5*(range_max*2/c);
-slope = Bsweep/Ts;
-
-
 
 %% FMCW Waveform Generation
 
@@ -36,6 +31,9 @@ slope = Bsweep/Ts;
 % Calculate the Bandwidth (B), Chirp Time (Tchirp) and Slope (slope) of the FMCW
 % chirp using the requirements above.
 
+B = c/2*range_resolution;
+Tchirp = 5.5*(range_max*2/c);
+slope = B/Tchirp;
 
                                                           
 %The number of chirps in one sequence. Its ideal to have 2^ value for the ease of running the FFT
@@ -48,7 +46,6 @@ Nr=1024;                  %for length of time OR # of range cells
 % Timestamp for running the displacement scenario for every sample on each
 % chirp
 t=linspace(0,Nd*Tchirp,Nr*Nd); %total time for samples
-
 
 %Creating the vectors for Tx, Rx and Mix based on the total samples input.
 Tx=zeros(1,length(t)); %transmitted signal
@@ -72,14 +69,14 @@ for i=1:length(t)
     % *%TODO* :
     %For each time sample we need update the transmitted and
     %received signal. 
-    Tx(i) = 
-    Rx (i)  =
-    
-    % *%TODO* :
-    %Now by mixing the Transmit and Receive generate the beat signal
-    %This is done by element wise matrix multiplication of Transmit and
-    %Receiver Signal
-    Mix(i) = 
+    Tx(i)  = cos(2*pi*(fc*t(i) + slope*t(i)^2/2));
+    Rx (i) = cos(2*pi*(fc*(t(i)-td(i)) + slope*(t(i)-td(i))^2/2));
+%     
+%     % *%TODO* :
+%     %Now by mixing the Transmit and Receive generate the beat signal
+%     %This is done by element wise matrix multiplication of Transmit and
+%     %Receiver Signal
+%     Mix(i) = 
     
 end
 
