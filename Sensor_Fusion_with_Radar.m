@@ -183,7 +183,7 @@ end
 %
 %
 % This function initializes a constant velocity filter based on a detection.
-function filter = initSimDemoFilter(detection)
+function KF = initSimDemoFilter(detection)
 % Use a 2-D constant velocity model to initialize a trackingKF filter.
 % The state vector is [x;vx;y;vy]
 % The detection measurement vector is [x;y;vx;vy]
@@ -192,13 +192,16 @@ function filter = initSimDemoFilter(detection)
 %TODO: Implement the Kalman filter using trackingKF function. If stuck
 %review the implementation discussed in the project walkthrough
 
-state = [detection.Measurement(1);detection.Measurement(3);detection.Measurement(2);detection.Measurement(4)];
+% state = [detection.Measurement(1);detection.Measurement(3);detection.Measurement(2);detection.Measurement(4)];
 model = '2D Constant Velocity';
+H = [1 0 0 0; 0 0 1 0; 0 1 0 0; 0 0 0 1];
 measurementModel = [1 0 0 0; 0 0 1 0; 0 1 0 0; 0 0 0 1];
+state = H'*detection.Measurement;
+stateCovariance = H'*detection.MeasurementNoise*H;
+measurementNoise = detection.MeasurementNoise;
 
-filter = trackingKF('MotionModel', model, 'State', state, 'MeasurementModel', measurementModel);
-
-
+KF = trackingKF('MotionModel', model, 'State', state, 'MeasurementModel', measurementModel, ...
+    'StateCovariance', stateCovariance, 'MeasurementNoise', measurementNoise);
 
 end
 
