@@ -8,6 +8,8 @@
 % simulates a highway setting, and additional vehicles are in front of and
 % behind the ego vehicle.
 
+close all;
+
 % Define an empty scenario.
 scenario = drivingScenario;
 scenario.SampleTime = 0.01;
@@ -189,6 +191,13 @@ function filter = initSimDemoFilter(detection)
 
 %TODO: Implement the Kalman filter using trackingKF function. If stuck
 %review the implementation discussed in the project walkthrough
+
+state = [detection.Measurement(1);detection.Measurement(3);detection.Measurement(2);detection.Measurement(4)];
+model = '2D Constant Velocity';
+measurementModel = [1 0 0 0; 0 0 1 0; 0 1 0 0; 0 0 0 1];
+
+filter = trackingKF('MotionModel', model, 'State', state, 'MeasurementModel', measurementModel);
+
 
 
 end
