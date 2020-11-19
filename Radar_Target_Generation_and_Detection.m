@@ -184,8 +184,6 @@ noise_level = zeros(1,1);
    % Use RDM[x,y] as the matrix from the output of 2D FFT for implementing
    % CFAR
    
-% RDM = RDM/max(max(RDM));
-% 
 % 2. Slide window across the signal length
 for i = Tr+Gr+1:(Nr/2 - (Tr+Gr))   
     for j = Td+Gd+1:(Nd - (Gd+Td))
@@ -207,8 +205,8 @@ for i = Tr+Gr+1:(Nr/2 - (Tr+Gr))
         CUT=RDM(i,j);
         if (CUT<threshold)
             RDM(i,j)=0;
-%         else
-%             RDM(i,j)=max(max(RDM));;
+        else
+            RDM(i,j)=1;
         end
     end
 end
