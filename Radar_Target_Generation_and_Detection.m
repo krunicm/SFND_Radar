@@ -14,6 +14,8 @@ clc;
 % *%TODO* :
 % define the target's initial position and velocity. Note : Velocity
 % remains contant
+Velocity = -10;
+Initial_range = 110;
 
 c = 3*10^8;         %speed of light
 
@@ -65,6 +67,8 @@ for i=1:length(t)
     
     % *%TODO* :
     %For each time stamp update the Range of the Target for constant velocity. 
+    r_t(i) = Initial_range + Velocity*t(i);
+    td(i) = 2 * r_t(i)/c;
     
     % *%TODO* :
     %For each time sample we need update the transmitted and
@@ -86,26 +90,34 @@ end
  % *%TODO* :
 %reshape the vector into Nr*Nd array. Nr and Nd here would also define the size of
 %Range and Doppler FFT respectively.
+Mix=reshape(Mix,[Nr,Nd]);
 
  % *%TODO* :
 %run the FFT on the beat signal along the range bins dimension (Nr) and
 %normalize.
+fft_sig = fft(Mix);
+L = Tchirp * B;
 
  % *%TODO* :
 % Take the absolute value of FFT output
+fft_sig = abs(fft_sig/L);
 
  % *%TODO* :
 % Output of FFT is double sided signal, but we are interested in only one side of the spectrum.
 % Hence we throw out half of the samples.
+fft_sig = fft_sig(1:L/2+1);
 
+ % plot FFT output 
+f = B*(0:(L/2))/L;
+title('Single-Sided Amplitude Spectrum of X(t)');
+xlabel('f (Hz)');
+ylabel('|P1(f)|');
+plot(f,fft_sig);
 
 %plotting the range
+R = (c*Tchirp*f)/(2*B);
 figure ('Name','Range from First FFT')
-subplot(2,1,1)
-
- % *%TODO* :
- % plot FFT output 
-
+plot(R, fft_sig);
  
 axis ([0 200 0 1]);
 
@@ -123,7 +135,6 @@ axis ([0 200 0 1]);
 % doppler FFT bins. So, it is important to convert the axis from bin sizes
 % to range and doppler based on their Max values.
 
-Mix=reshape(Mix,[Nr,Nd]);
 
 % 2D FFT using the FFT size for both dimensions.
 sig_fft2 = fft2(Mix,Nr,Nd);
